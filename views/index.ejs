@@ -1,0 +1,9 @@
+<% layout('layout') -%>
+<h2>Welcome</h2>
+<p>
+  <% if (user) { %>
+    Hello, <strong><%= user.email %></strong>. Go to your <a href="/dashboard">dashboard</a>.
+  <% } else { %>
+    Please <a href="/auth/login">login</a> or <a href="/auth/register">register</a>.
+  <% } %>
+</p>

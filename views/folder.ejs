@@ -1,0 +1,38 @@
+<% layout('layout') -%>
+<h2>Folder: <%= folder.name %></h2>
+
+<form method="POST" action="/folders/<%= folder.id %>/update">
+  <input name="name" value="<%= folder.name %>" />
+  <button type="submit">Rename</button>
+</form>
+
+<h3>Upload file</h3>
+<form action="/files/upload/<%= folder.id %>" method="POST" enctype="multipart/form-data">
+  <input type="file" name="file" required />
+  <button type="submit">Upload</button>
+</form>
+
+<h3>Files</h3>
+<ul>
+  <% folder.files.forEach(function(file) { %>
+    <li>
+      <strong><%= file.originalName %></strong> —
+      <%= Math.round(file.size/1024) %> KB —
+      <a href="/files/download/<%= file.id %>">Download</a>
+      <form method="post" action="/files/<%= file.id %>/delete" style="display:inline">
+        <button type="submit">Delete</button>
+      </form>
+    </li>
+  <% }) %>
+</ul>
+
+<h3>Create share link</h3>
+<form method="POST" action="/share/create">
+  <input type="hidden" name="folderId" value="<%= folder.id %>" />
+  <label>Days active:
+    <input name="days" type="number" value="1" min="1" />
+  </label>
+  <button type="submit">Create share link</button>
+</form>
+
+<p><a href="/dashboard">Back to dashboard</a></p>

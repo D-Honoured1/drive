@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= title || 'Drive App' %></title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1><a href="/">Drive App</a></h1>
+      <nav>
+        <% if (user) { %>
+          <a href="/dashboard">Dashboard</a>
+          <form method="post" action="/auth/logout" style="display:inline">
+            <button type="submit">Logout</button>
+          </form>
+        <% } else { %>
+          <a href="/auth/login">Login</a>
+          <a href="/auth/register">Register</a>
+        <% } %>
+      </nav>
+    </header>
+    <main>
+      <%- body %>
+    </main>
+    <footer>
+      <small>Built with Express + Prisma + Supabase</small>
+    </footer>
+  </body>
+</html>

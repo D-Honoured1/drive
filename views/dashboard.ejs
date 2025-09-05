@@ -1,0 +1,18 @@
+<% layout('layout') -%>
+<h2>Your Folders</h2>
+
+<form method="POST" action="/folders">
+  <input name="name" placeholder="New folder name" required />
+  <button type="submit">Create folder</button>
+</form>
+
+<ul>
+  <% folders.forEach(function(folder) { %>
+    <li>
+      <a href="/folders/<%= folder.id %>"><%= folder.name %></a>
+      <form method="post" action="/folders/<%= folder.id %>/delete" style="display:inline">
+        <button type="submit">Delete</button>
+      </form>
+    </li>
+  <% }) %>
+</ul>

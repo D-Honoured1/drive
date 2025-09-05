@@ -1,0 +1,70 @@
+// Prisma schema for Drive App
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users of the system
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  folders   Folder[]
+  files     File[]
+}
+
+// Folders owned by users
+model Folder {
+  id        Int      @id @default(autoincrement())
+  name      String
+  ownerId   Int
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  files     File[]
+  shareLinks ShareLink[]
+}
+
+// Files metadata (actual blob stored in Supabase Storage)
+model File {
+  id           Int      @id @default(autoincrement())
+  folderId     Int
+  folder       Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  ownerId      Int
+  owner        User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  filename     String   // stored filename/key in bucket
+  originalName String
+  mimeType     String
+  size         Int
+  storagePath  String   // storage key/path (not full public URL)
+  uploadedAt   DateTime @default(now())
+}
+
+// Share links for folders
+model ShareLink {
+  id        String   @id @default(uuid()) // uuid id
+  folderId  Int
+  folder    Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// Session model to allow prisma-backed session store
+model Session {
+  id        String   @id @default(cuid())
+  sid       String   @unique
+  data      Json
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

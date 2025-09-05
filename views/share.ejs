@@ -1,0 +1,15 @@
+<% layout('layout') -%>
+<h2>Shared Folder: <%= folder.name %></h2>
+<p>Link token: <%= token %></p>
+<ul>
+  <% files.forEach(function(file) { %>
+    <li>
+      <strong><%= file.originalName %></strong> —
+      <% if (file.url) { %>
+        <a href="<%= file.url %>">Download (signed)</a>
+      <% } else { %>
+        (could not generate download URL)
+      <% } %>
+    </li>
+  <% }) %>
+</ul>

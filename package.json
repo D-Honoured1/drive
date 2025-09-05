@@ -1,0 +1,35 @@
+{
+  "name": "drive-app",
+  "version": "1.0.0",
+  "description": "Simplified Google Drive using Express, Prisma and Supabase Storage",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev --name init",
+    "db:seed": "node prisma/seed.js",
+    "init-db": "node scripts/init-db.js"
+  },
+  "author": "Kamisoft Enterprises",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.0.0",
+    "@quixo3/prisma-session-store": "^5.0.0",
+    "@supabase/supabase-js": "^2.25.0",
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.0",
+    "ejs": "^3.1.10",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "multer": "^1.4.5-lts.1",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "prisma": "^5.0.0",
+    "uuid": "^9.0.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
