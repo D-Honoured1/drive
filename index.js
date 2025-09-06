@@ -23,6 +23,7 @@ const morgan = require('morgan');
 const prisma = require('./db/prismaClient');
 const setupPassport = require('./auth/passport');
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
+const expressLayouts = require('express-ejs-layouts');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,7 +32,9 @@ const SESSION_SECRET = process.env.SESSION_SECRET || 'replace_me_in_prod';
 // Setup EJS, static folder
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.set('layout', 'layout'); // default layout file views/layout.ejs
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(expressLayouts);
 
 // Logging + body parsing
 app.use(morgan('dev'));
