@@ -1,18 +1,3 @@
-/**
- * Entry point: Express app
- *
- * - Sets up sessions (prisma-backed)
- * - Initializes passport
- * - Mounts routes
- * - Serves EJS views and static assets
- *
- * Important environment variables:
- *   - DATABASE_URL (Prisma)
- *   - SUPABASE_URL, SUPABASE_SERVICE_KEY
- *   - SESSION_SECRET
- *   - SUPABASE_BUCKET
- */
-
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
@@ -33,7 +18,7 @@ const SESSION_SECRET = process.env.SESSION_SECRET || 'replace_me_in_prod';
 // Setup EJS + layouts + static folder
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.set('layout', 'layout'); // default layout file: views/layout.ejs
+app.set('layout', 'layout');
 app.use(expressLayouts);
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -44,7 +29,7 @@ app.use(express.json());
 
 // Session store using Prisma
 const store = new PrismaSessionStore(prisma, {
-  checkPeriod: 2 * 60 * 1000, // prune expired sessions every 2 minutes
+  checkPeriod: 2 * 60 * 1000,
   dbRecordIdIsSessionId: false
 });
 
@@ -63,37 +48,37 @@ app.use(
   })
 );
 
-// Flash messages (must come AFTER session middleware)
-app.use(flash());
-
-// Make flash messages available in all views
-app.use((req, res, next) => {
-  res.locals.error = req.flash('error');
-  next();
-});
-
-// Default locals (title, etc.)
-app.use((req, res, next) => {
-  res.locals.title = 'Drive App';
-  res.locals.user = req.user || null; // current logged in user
-  next();
-});
-
-// Initialize passport
+// CRITICAL: Initialize passport BEFORE flash messages
 setupPassport(passport, prisma);
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Flash messages AFTER passport
+app.use(flash());
+
+// Make flash messages and user available in all views
+app.use((req, res, next) => {
+  res.locals.error = req.flash('error');
+  res.locals.success = req.flash('success');
+  res.locals.title = 'Drive App';
+  res.locals.user = req.user || null;
+  next();
+});
+
 // Routes
 app.get('/', (req, res) => {
-  res.render('index'); // user available in res.locals.user
+  // Redirect authenticated users to dashboard
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return res.redirect('/dashboard');
+  }
+  res.render('index');
 });
 
 // Auth routes
 app.use('/auth', require('./routes/auth'));
 
-// Dashboard & other routes
-app.use('/', require('./routes/folders')); // folders/dashboard
+// Protected routes
+app.use('/', require('./routes/folders'));
 app.use('/', require('./routes/files'));
 app.use('/', require('./routes/share'));
 
@@ -106,7 +91,6 @@ app.use((err, req, res, next) => {
   res.status(500).send('Internal server error');
 });
 
-// ✅ Bind to 0.0.0.0 for Railway / Docker
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server started on 0.0.0.0:${PORT} (PORT=${PORT})`);
 });

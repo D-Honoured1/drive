@@ -6,35 +6,66 @@ const authController = require('../controllers/authController');
 // Show registration form
 router.get('/register', authController.showRegister);
 
-// Handle registration
+// Handle registration form submission
 router.post('/register', authController.register);
 
-// Show login form
+// Show login form - redirect if already authenticated
 router.get('/login', (req, res) => {
-  // Pass any flash error messages to the template
-  res.render('login', { error: req.flash('error'), user: req.user });
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return res.redirect('/dashboard');
+  }
+  res.render('login', { user: req.user });
 });
 
-// Handle login using Passport
+// Handle login form submission
 router.post('/login', (req, res, next) => {
+  const { email, password } = req.body;
+  
+  // Basic validation
+  if (!email || !password) {
+    req.flash('error', 'Email and password are required');
+    return res.redirect('/auth/login');
+  }
+  
+  console.log('Login attempt for:', email);
+  
   passport.authenticate('local', (err, user, info) => {
-    if (err) return next(err);
-
-    if (!user) {
-      // Flash error and redirect to login
-      req.flash('error', info?.message || 'Invalid credentials');
+    console.log('Auth callback:', {
+      err: err ? err.message : null,
+      user: user ? `ID: ${user.id}, Email: ${user.email}` : null,
+      info: info ? info.message : null
+    });
+    
+    // If an error occurred in strategy
+    if (err) {
+      console.error('Passport strategy error:', err);
+      req.flash('error', 'An error occurred during login');
       return res.redirect('/auth/login');
     }
 
-    // Successful login
+    // If login failed
+    if (!user) {
+      console.log('Login failed for:', email, 'Reason:', info?.message);
+      req.flash('error', info?.message || 'Invalid email or password');
+      return res.redirect('/auth/login');
+    }
+
+    // Successful authentication, establish session
     req.logIn(user, (err) => {
-      if (err) return next(err);
-      return res.redirect('/folders');
+      if (err) {
+        console.error('Session establishment error:', err);
+        req.flash('error', 'Login session could not be established');
+        return res.redirect('/auth/login');
+      }
+      
+      console.log('Login successful for user:', user.email, 'Redirecting to dashboard');
+      req.flash('success', 'Welcome back!');
+      return res.redirect('/dashboard');
     });
   })(req, res, next);
 });
 
-// Logout
+// Handle logout
 router.post('/logout', authController.logout);
 
 module.exports = router;
