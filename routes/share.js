@@ -8,7 +8,7 @@
 
 const express = require("express")
 const router = express.Router()
-const ensureAuth = require("../ensureAuth")
+const ensureAuth = require("../middleware/ensureAuth.js")
 const shareController = require("../controllers/shareController")
 
 router.post("/share/create", ensureAuth, shareController.createShare)

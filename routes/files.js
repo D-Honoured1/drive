@@ -15,7 +15,7 @@ const express = require("express")
 const multer = require("multer")
 const path = require("path")
 const router = express.Router()
-const ensureAuth = require("../ensureAuth")
+const ensureAuth = require("../middleware/ensureAuth.js")
 const fileController = require("../controllers/fileController")
 
 // Multer disk storage to a temp location
