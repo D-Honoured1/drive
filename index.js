@@ -86,6 +86,7 @@ app.use((err, req, res, next) => {
   res.status(500).send('Internal server error');
 });
 
-app.listen(PORT, () => {
-  console.log(`Server started on http://localhost:${PORT} (PORT=${PORT})`);
+// ✅ Bind to 0.0.0.0 for Railway
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server started on 0.0.0.0:${PORT} (PORT=${PORT})`);
 });
