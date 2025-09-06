@@ -24,6 +24,7 @@ const prisma = require('./db/prismaClient');
 const setupPassport = require('./auth/passport');
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const expressLayouts = require('express-ejs-layouts');
+const flash = require('connect-flash');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +36,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('layout', 'layout'); // default layout file views/layout.ejs
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(expressLayouts);
+app.use(flash());
+
+// Setup flash messages - must come after session middleware
+app.use((req, res, next) => {
+  res.locals.error = req.flash('error'); // available in all views
+  next();
+});
 
 // ✅ Default locals (title, etc.)
 app.use((req, res, next) => {

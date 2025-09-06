@@ -1,5 +1,9 @@
-
 <h2>Login</h2>
+
+<% if (error && error.length > 0) { %>
+  <p style="color:red;"><%= error[0] %></p>
+<% } %>
+
 <form method="POST" action="/auth/login">
   <div>
     <label>Email</label>
@@ -11,3 +15,5 @@
   </div>
   <button type="submit">Login</button>
 </form>
+
+<p>Don't have an account? <a href="/auth/register">Register</a></p>

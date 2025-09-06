@@ -22,13 +22,10 @@ router.get('/login', authController.showLogin);
 router.post(
   '/login',
   passport.authenticate('local', {
+    successRedirect: '/dashboard',
     failureRedirect: '/auth/login',
-    failureFlash: false
-  }),
-  (req, res) => {
-    // on success
-    res.redirect('/dashboard');
-  }
+    failureFlash: true
+  })
 );
 
 router.post('/logout', authController.logout);

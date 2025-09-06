@@ -1,9 +1,11 @@
-
 <h2>Register</h2>
+<% if (error) { %>
+  <p style="color:red;"><%= error %></p>
+<% } %>
 <form method="POST" action="/auth/register">
   <div>
     <label>Name</label>
-    <input name="name" type="text" />
+    <input name="name" type="text" required />
   </div>
   <div>
     <label>Email</label>
@@ -13,5 +15,10 @@
     <label>Password</label>
     <input name="password" type="password" required />
   </div>
+  <div>
+    <label>Confirm Password</label>
+    <input name="confirmPassword" type="password" required />
+  </div>
   <button type="submit">Register</button>
 </form>
+<p>Already have an account? <a href="/auth/login">Login</a></p>
