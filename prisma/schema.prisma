@@ -1,4 +1,3 @@
-// Prisma schema for Drive App
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Users of the system
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -16,55 +14,49 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  folders   Folder[]
   files     File[]
+  folders   Folder[]
 }
 
-// Folders owned by users
 model Folder {
-  id        Int      @id @default(autoincrement())
-  name      String
-  ownerId   Int
-  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  files     File[]
+  id         Int         @id @default(autoincrement())
+  name       String
+  ownerId    Int
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  files      File[]
+  owner      User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   shareLinks ShareLink[]
 }
 
-// Files metadata (actual blob stored in Supabase Storage)
 model File {
   id           Int      @id @default(autoincrement())
   folderId     Int
-  folder       Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
   ownerId      Int
-  owner        User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  filename     String   // stored filename/key in bucket
+  filename     String
   originalName String
   mimeType     String
   size         Int
-  storagePath  String   // storage key/path (not full public URL)
+  storagePath  String
   uploadedAt   DateTime @default(now())
+  folder       Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  owner        User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 }
 
-// Share links for folders
 model ShareLink {
-  id        String   @id @default(uuid()) // uuid id
+  id        String   @id @default(uuid())
   folderId  Int
-  folder    Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
+  folder    Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
 }
 
-// Session model to allow prisma-backed session store
 model Session {
-  id        String   @id @default(cuid())
-  sid       String   @unique
+  id        String    @id @default(cuid())
+  sid       String    @unique
   data      Json
   expiresAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
