@@ -8,8 +8,8 @@
 
 const express = require("express")
 const router = express.Router()
-const ensureAuth = require("./ensureAuth")
-const shareController = require("./controllers/shareController")
+const ensureAuth = require("../ensureAuth")
+const shareController = require("../controllers/shareController")
 
 router.post("/share/create", ensureAuth, shareController.createShare)
 router.get("/share/:token", shareController.viewShare)
