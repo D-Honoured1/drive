@@ -1,7 +1,3 @@
-// Tell Express it's running behind a proxy (Railway/Supabase/Heroku, etc.)
-app.set("trust proxy", 1)
-
-
 require("dotenv").config()
 const express = require("express")
 const session = require("express-session")
@@ -20,6 +16,10 @@ const prisma = require("./db/prismaClient")
 const setupPassport = require("./auth/passport")
 
 const app = express()
+
+// Tell Express it's running behind a proxy (Railway/Supabase/Heroku, etc.)
+app.set("trust proxy", 1)
+
 const PORT = process.env.PORT || 3000
 const SESSION_SECRET = process.env.SESSION_SECRET || "replace_me_in_prod"
 
