@@ -1,3 +1,7 @@
+// Tell Express it's running behind a proxy (Railway/Supabase/Heroku, etc.)
+app.set("trust proxy", 1)
+
+
 require("dotenv").config()
 const express = require("express")
 const session = require("express-session")
