@@ -1,7 +1,3 @@
-/**
- * Authentication routes
- * Handles login, registration, and logout
- */
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
@@ -10,33 +6,35 @@ const authController = require('../controllers/authController');
 // Show registration form
 router.get('/register', authController.showRegister);
 
-// Handle registration form submission
+// Handle registration
 router.post('/register', authController.register);
 
 // Show login form
-router.get('/login', authController.showLogin);
+router.get('/login', (req, res) => {
+  // Pass any flash error messages to the template
+  res.render('login', { error: req.flash('error'), user: req.user });
+});
 
-// Handle login form submission using Passport Local Strategy
+// Handle login using Passport
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
-    // If an error occurred in strategy
     if (err) return next(err);
 
-    // If login failed
     if (!user) {
+      // Flash error and redirect to login
       req.flash('error', info?.message || 'Invalid credentials');
       return res.redirect('/auth/login');
     }
 
-    // Successful login: establish session
+    // Successful login
     req.logIn(user, (err) => {
       if (err) return next(err);
-      return res.redirect('/dashboard'); // redirect on success
+      return res.redirect('/folders');
     });
   })(req, res, next);
 });
 
-// Handle logout
+// Logout
 router.post('/logout', authController.logout);
 
 module.exports = router;
