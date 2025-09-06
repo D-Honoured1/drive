@@ -8,7 +8,7 @@
  * Make sure DATABASE_URL and ADMIN_PASSWORD (optional) are set in .env
  */
 require('dotenv').config();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 

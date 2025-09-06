@@ -3,7 +3,7 @@
  */
 
 const prisma = require("../db/prismaClient")
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcryptjs")
 
 exports.showRegister = (req, res) => {
   res.render("register", {
