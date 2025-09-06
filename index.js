@@ -7,6 +7,30 @@ const morgan = require('morgan');
 const flash = require('connect-flash');
 const expressLayouts = require('express-ejs-layouts');
 
+// Add these routes AFTER your middleware setup but BEFORE your main routes
+
+// DEBUG: Add these routes to your index.js after the middleware section:
+
+app.get('/debug/auth', (req, res) => {
+  res.json({
+    isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+    user: req.user || null,
+    sessionID: req.sessionID,
+    sessionData: req.session
+  });
+});
+
+app.get('/debug/users', async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: { id: true, email: true, name: true, createdAt: true }
+    });
+    res.json({ users, count: users.length });
+  } catch (error) {
+    res.json({ error: error.message });
+  }
+});
+
 const prisma = require('./db/prismaClient');
 const setupPassport = require('./auth/passport');
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');

@@ -1,3 +1,4 @@
+// UPDATED routes/auth.js - Fix the login route
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
@@ -11,56 +12,83 @@ router.post('/register', authController.register);
 
 // Show login form - redirect if already authenticated
 router.get('/login', (req, res) => {
+  console.log('=== GET /auth/login ===');
+  console.log('User authenticated?', req.isAuthenticated ? req.isAuthenticated() : 'function not available');
+  console.log('Current user:', req.user);
+  
   if (req.isAuthenticated && req.isAuthenticated()) {
+    console.log('User already authenticated, redirecting to dashboard');
     return res.redirect('/dashboard');
   }
-  res.render('login', { user: req.user });
+  
+  // FIX: Add the missing page assets that your layout expects
+  res.render('login', { 
+    user: req.user,
+    pageTitle: 'Login',           // This was missing!
+    pageScript: '/js/auth.js',    // This was missing!
+    pageCSS: '/css/auth.css'      // This was missing!
+  });
 });
 
 // Handle login form submission
 router.post('/login', (req, res, next) => {
+  console.log('\n=== POST /auth/login ===');
+  console.log('Login data:', { email: req.body.email, passwordLength: req.body.password?.length });
+  console.log('Session before:', req.sessionID);
+  
   const { email, password } = req.body;
   
   // Basic validation
   if (!email || !password) {
+    console.log('❌ Missing credentials');
     req.flash('error', 'Email and password are required');
     return res.redirect('/auth/login');
   }
   
-  console.log('Login attempt for:', email);
+  console.log('🔐 Attempting authentication for:', email);
   
   passport.authenticate('local', (err, user, info) => {
-    console.log('Auth callback:', {
-      err: err ? err.message : null,
-      user: user ? `ID: ${user.id}, Email: ${user.email}` : null,
-      info: info ? info.message : null
-    });
+    console.log('\n--- Auth Result ---');
+    console.log('Error:', err ? err.message : 'None');
+    console.log('User:', user ? `${user.email} (ID: ${user.id})` : 'None');
+    console.log('Info:', info ? info.message : 'None');
     
-    // If an error occurred in strategy
     if (err) {
-      console.error('Passport strategy error:', err);
-      req.flash('error', 'An error occurred during login');
+      console.error('❌ Auth error:', err);
+      req.flash('error', 'Authentication error occurred');
       return res.redirect('/auth/login');
     }
 
-    // If login failed
     if (!user) {
-      console.log('Login failed for:', email, 'Reason:', info?.message);
-      req.flash('error', info?.message || 'Invalid email or password');
+      console.log('❌ Login failed:', info?.message);
+      req.flash('error', info?.message || 'Invalid credentials');
       return res.redirect('/auth/login');
     }
 
-    // Successful authentication, establish session
-    req.logIn(user, (err) => {
-      if (err) {
-        console.error('Session establishment error:', err);
-        req.flash('error', 'Login session could not be established');
+    console.log('✅ Auth successful, creating session...');
+    
+    req.logIn(user, (loginErr) => {
+      console.log('\n--- Session Creation ---');
+      console.log('Login error:', loginErr ? loginErr.message : 'None');
+      console.log('Session after login:', req.sessionID);
+      console.log('req.user set?', !!req.user);
+      console.log('isAuthenticated?', req.isAuthenticated ? req.isAuthenticated() : 'N/A');
+      
+      if (loginErr) {
+        console.error('❌ Session error:', loginErr);
+        req.flash('error', 'Could not create session');
         return res.redirect('/auth/login');
       }
       
-      console.log('Login successful for user:', user.email, 'Redirecting to dashboard');
+      console.log('✅ Session created! Redirecting to dashboard...');
       req.flash('success', 'Welcome back!');
-      return res.redirect('/dashboard');
+      
+      // Force session save before redirect
+      req.session.save((saveErr) => {
+        if (saveErr) console.error('Session save error:', saveErr);
+        console.log('🎯 Final redirect to /dashboard');
+        return res.redirect('/dashboard');
+      });
     });
   })(req, res, next);
 });
