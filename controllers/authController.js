@@ -40,6 +40,11 @@ exports.register = async (req, res) => {
       return res.redirect("/auth/register")
     }
 
+    if (password.length < 8) {
+      req.flash("error", "Password must be at least 8 characters long")
+      return res.redirect("/auth/register")
+    }
+
     const existing = await prisma.user.findUnique({ where: { email } })
     if (existing) {
       req.flash("error", "User with this email already exists")
@@ -54,7 +59,6 @@ exports.register = async (req, res) => {
     // Auto login after register
     req.login({ id: user.id, email: user.email, name: user.name }, (err) => {
       if (err) {
-        console.error("Auto login error:", err)
         req.flash("error", "Registration successful, please login")
         return res.redirect("/auth/login")
       }
@@ -62,21 +66,25 @@ exports.register = async (req, res) => {
       return res.redirect("/dashboard")
     })
   } catch (err) {
-    console.error("Register error:", err)
-    req.flash("error", "Server error during registration")
+    req.flash("error", "Registration failed. Please try again.")
     res.redirect("/auth/register")
   }
 }
 
 exports.logout = (req, res) => {
+  const successMessage = "You have been logged out"
+
   req.logout((err) => {
     if (err) {
-      console.error("Logout error", err)
+      return res.redirect("/dashboard")
     }
-    req.session.destroy(() => {
+
+    req.session.destroy((destroyErr) => {
       res.clearCookie("connect.sid")
-      req.flash("success", "You have been logged out")
-      res.redirect("/auth/login")
+      if (destroyErr) {
+        return res.redirect("/auth/login")
+      }
+      res.redirect("/auth/login?message=logged_out")
     })
   })
 }
