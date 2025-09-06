@@ -10,7 +10,7 @@
 
 const express = require("express")
 const router = express.Router()
-const ensureAuth = require("../ensureAuth")
+const ensureAuth = require("../ensureAuth.js")
 const folderController = require("../controllers/folderController")
 
 router.get("/dashboard", ensureAuth, folderController.dashboard)
