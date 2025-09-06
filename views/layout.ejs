@@ -1,39 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= typeof pageTitle !== 'undefined' ? pageTitle + ' - ' + title : title %></title>
-    
-    <!-- Global CSS -->
-    <link rel="stylesheet" href="/css/main.css">
-    
-    <!-- Page-specific CSS -->
-    <% if (typeof pageCSS !== 'undefined') { %>
-        <link rel="stylesheet" href="<%= pageCSS %>">
-    <% } %>
-</head>
-<body>
-    <!-- Navigation (if user is logged in) -->
-    <% if (user) { %>
-        <nav class="navbar">
-            <div class="nav-container">
-                <a href="/dashboard" class="nav-brand">Drive App</a>
-                <div class="nav-links">
-                    <a href="/dashboard">Dashboard</a>
-                    <form method="POST" action="/auth/logout" style="display: inline;">
-                        <button type="submit" class="logout-btn">Logout</button>
-                    </form>
-                </div>
-            </div>
-        </nav>
-    <% } %>
+<div class="auth-container">
+    <div class="auth-header">
+        <h2>Welcome Back</h2>
+        <p>Sign in to your Drive App account</p>
+    </div>
 
-    <!-- Flash Messages -->
+    <!-- Added flash message display for better user feedback -->
     <% if (error && error.length > 0) { %>
-        <div class="flash-container">
+        <div class="flash-messages">
             <% error.forEach(function(msg) { %>
                 <div class="alert alert-error">
+                    <svg class="alert-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
                     <%= msg %>
                 </div>
             <% }); %>
@@ -41,33 +21,76 @@
     <% } %>
 
     <% if (success && success.length > 0) { %>
-        <div class="flash-container">
+        <div class="flash-messages">
             <% success.forEach(function(msg) { %>
                 <div class="alert alert-success">
+                    <svg class="alert-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="9 11l3 3l8-8"></path>
+                        <path d="21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9s4.03-9 9-9c1.51 0 2.93.37 4.18 1.03"></path>
+                    </svg>
                     <%= msg %>
                 </div>
             <% }); %>
         </div>
     <% } %>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <%- body %>
-    </main>
+    <form method="POST" action="/auth/login" class="auth-form" id="loginForm">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input 
+                name="email" 
+                id="email" 
+                type="email" 
+                required 
+                placeholder="Enter your email"
+                autocomplete="email"
+                class="form-input"
+            />
+            <div class="error-message" id="emailError"></div>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="password-input-container">
+                <input 
+                    name="password" 
+                    id="password" 
+                    type="password" 
+                    required 
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    class="form-input"
+                />
+                <button type="button" class="password-toggle" id="togglePassword">
+                    <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
+            <div class="error-message" id="passwordError"></div>
+        </div>
+        
+        <button type="submit" class="submit-btn" id="submitBtn">
+            <span class="btn-text">Sign In</span>
+            <div class="btn-spinner" style="display: none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                </svg>
+            </div>
+        </button>
+    </form>
 
-    <!-- Global JavaScript -->
-    <script src="/js/main.js"></script>
-    
-    <!-- Page-specific JavaScript -->
-    <% if (typeof pageScript !== 'undefined') { %>
-        <script src="<%= pageScript %>"></script>
-    <% } %>
+    <div class="auth-links">
+        <p>Don't have an account? <a href="/auth/register">Create Account</a></p>
+    </div>
 
-    <!-- Multiple page scripts support -->
-    <% if (typeof pageScripts !== 'undefined' && Array.isArray(pageScripts)) { %>
-        <% pageScripts.forEach(function(script) { %>
-            <script src="<%= script %>"></script>
-        <% }); %>
+    <!-- Debug info (only in development) -->
+    <% if (process.env.NODE_ENV !== 'production') { %>
+        <div class="debug-info">
+            <strong>Debug Info:</strong><br>
+            User authenticated: <%= user ? 'Yes (' + user.email + ')' : 'No' %><br>
+            Environment: <%= process.env.NODE_ENV || 'development' %>
+        </div>
     <% } %>
-</body>
-</html>
+</div>
