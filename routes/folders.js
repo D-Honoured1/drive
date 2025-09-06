@@ -8,23 +8,23 @@
  *  POST /folders/:id/delete  -> delete folder (and its files)
  */
 
-const express = require('express');
-const router = express.Router();
-const ensureAuth = require('../middleware/ensureAuth');
-const folderController = require('../controllers/folderController');
+const express = require("express")
+const router = express.Router()
+const ensureAuth = require("./ensureAuth")
+const folderController = require("./controllers/folderController")
 
-router.get('/dashboard', ensureAuth, folderController.dashboard);
+router.get("/dashboard", ensureAuth, folderController.dashboard)
 
 // create folder
-router.post('/folders', ensureAuth, folderController.createFolder);
+router.post("/folders", ensureAuth, folderController.createFolder)
 
 // view folder
-router.get('/folders/:id', ensureAuth, folderController.viewFolder);
+router.get("/folders/:id", ensureAuth, folderController.viewFolder)
 
 // update folder
-router.post('/folders/:id/update', ensureAuth, folderController.updateFolder);
+router.post("/folders/:id/update", ensureAuth, folderController.updateFolder)
 
 // delete folder
-router.post('/folders/:id/delete', ensureAuth, folderController.deleteFolder);
+router.post("/folders/:id/delete", ensureAuth, folderController.deleteFolder)
 
-module.exports = router;
+module.exports = router
