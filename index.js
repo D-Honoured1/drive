@@ -36,6 +36,12 @@ app.set('layout', 'layout'); // default layout file views/layout.ejs
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(expressLayouts);
 
+// ✅ Default locals (title, etc.)
+app.use((req, res, next) => {
+  res.locals.title = 'Drive App'; // default title if none passed
+  next();
+});
+
 // Logging + body parsing
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
