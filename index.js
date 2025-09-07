@@ -123,6 +123,11 @@ app.use((req, res, next) => {
   res.locals.success = req.flash("success")
   res.locals.title = "Drive App"
   res.locals.user = req.user || null
+  // Set default template variables to prevent undefined errors
+  res.locals.pageCSS = res.locals.pageCSS || null
+  res.locals.pageScript = res.locals.pageScript || null
+  res.locals.pageScripts = res.locals.pageScripts || null
+  res.locals.pageTitle = res.locals.pageTitle || "Drive App"
   next()
 })
 
@@ -155,9 +160,7 @@ app.get("/", (req, res) => {
     return res.redirect("/dashboard")
   }
   res.render("index", {
-    pageTitle: "Welcome",
-    pageCSS: null,
-    pageScript: null
+    pageTitle: "Welcome"
   })
 })
 
@@ -174,9 +177,9 @@ app.use((err, req, res, next) => {
 
   // Don't leak error details in production
   if (process.env.NODE_ENV === "production") {
-    res.status(500).render("error", {
-      message: "Something went wrong",
-      pageTitle: "Error",
+    res.status(500).json({
+      error: "Something went wrong",
+      message: "Internal server error"
     })
   } else {
     res.status(500).send(`Internal server error: ${err.message}`)

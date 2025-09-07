@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/css/style.css">
     
     <!-- Page-specific CSS -->
-    <% if (pageCSS) { %>
+    <% if (typeof pageCSS !== 'undefined' && pageCSS) { %>
         <link rel="stylesheet" href="<%= pageCSS %>">
     <% } %>
 </head>
@@ -67,11 +67,11 @@
     <script src="/js/main.js"></script>
     
     <!-- Page-specific JavaScript -->
-    <% if (pageScript) { %>
+    <% if (typeof pageScript !== 'undefined' && pageScript) { %>
         <script src="<%= pageScript %>"></script>
     <% } %>
     
-    <% if (pageScripts && Array.isArray(pageScripts)) { %>
+    <% if (typeof pageScripts !== 'undefined' && pageScripts && Array.isArray(pageScripts)) { %>
         <% pageScripts.forEach(function(script) { %>
             <script src="<%= script %>"></script>
         <% }); %>
