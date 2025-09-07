@@ -1,37 +1,3 @@
-/**
- * Authentication controllers (register, login page, logout)
- */
-
-const prisma = require("../db/prismaClient")
-const bcrypt = require("bcryptjs")
-
-exports.showRegister = (req, res) => {
-  res.render("register", {
-    user: req.user,
-    pageTitle: "Register",
-    pageScript: "/js/auth.js",
-    pageCSS: "/css/auth.css",
-    error: req.flash("error"),
-    success: req.flash("success"),
-  })
-}
-
-exports.showLogin = (req, res) => {
-  // Redirect if already authenticated
-  if (req.isAuthenticated && req.isAuthenticated()) {
-    return res.redirect("/dashboard")
-  }
-
-  res.render("login", {
-    user: req.user,
-    pageTitle: "Login",
-    pageScript: "/js/auth.js",
-    pageCSS: "/css/auth.css",
-    error: req.flash("error"),
-    success: req.flash("success"),
-  })
-}
-
 exports.register = async (req, res) => {
   try {
     const { email, password, name } = req.body
@@ -56,35 +22,20 @@ exports.register = async (req, res) => {
       data: { email, password: hashed, name },
     })
 
-    // Auto login after register
-    req.login({ id: user.id, email: user.email, name: user.name }, (err) => {
+    // 🔹 FIX: use req.logIn (not req.login) so Passport attaches session
+    req.logIn(user, (err) => {
       if (err) {
-        req.flash("error", "Registration successful, please login")
+        console.error("Auto-login failed after register:", err) // <-- added log
+        req.flash("success", "Registration successful, please login")
         return res.redirect("/auth/login")
       }
+
       req.flash("success", "Welcome to Drive App!")
-      return res.redirect("/dashboard")
+      return res.redirect("/dashboard") // ✅ always go to dashboard after register
     })
   } catch (err) {
+    console.error("Register error:", err) // <-- added log
     req.flash("error", "Registration failed. Please try again.")
     res.redirect("/auth/register")
   }
-}
-
-exports.logout = (req, res) => {
-  const successMessage = "You have been logged out"
-
-  req.logout((err) => {
-    if (err) {
-      return res.redirect("/dashboard")
-    }
-
-    req.session.destroy((destroyErr) => {
-      res.clearCookie("connect.sid")
-      if (destroyErr) {
-        return res.redirect("/auth/login")
-      }
-      res.redirect("/auth/login?message=logged_out")
-    })
-  })
 }

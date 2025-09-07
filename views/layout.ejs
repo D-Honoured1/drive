@@ -1,3 +1,14 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= pageTitle || "Drive App" %></title>
+
+  <!-- ✅ Changed from hardcoded /style.css to dynamic -->
+  <% if (pageCSS) { %>
+    <link rel="stylesheet" href="<%= pageCSS %>">
+  <% } %>
+</head>
+
 <div class="auth-container">
     <div class="auth-header">
         <h2>Welcome Back</h2>
