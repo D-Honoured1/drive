@@ -189,6 +189,16 @@
   text-decoration: underline;
 }
 
+.password-requirements {
+  margin-top: 6px;
+}
+
+.password-requirements small {
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .debug-info {
   margin-top: 30px;
   padding: 16px;

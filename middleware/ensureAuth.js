@@ -4,17 +4,6 @@
  * Otherwise redirects to login page (or returns 401 for API calls).
  */
 
-const ensureAuth = require("./middleware/ensureAuth")
-
-app.get("/dashboard", ensureAuth, (req, res) => {
-  res.render("dashboard", {
-    user: req.user,
-    title: "Dashboard",
-  })
-})
-
-
-
 function ensureAuth(req, res, next) {
   console.log("\n🛡️  ENSURE AUTH CHECK")
   console.log("Path:", req.path)

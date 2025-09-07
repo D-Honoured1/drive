@@ -154,7 +154,11 @@ app.get("/", (req, res) => {
   if (req.isAuthenticated && req.isAuthenticated()) {
     return res.redirect("/dashboard")
   }
-  res.render("index")
+  res.render("index", {
+    pageTitle: "Welcome",
+    pageCSS: null,
+    pageScript: null
+  })
 })
 
 app.use("/auth", require("./routes/auth"))
